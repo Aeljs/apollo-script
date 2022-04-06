@@ -19,9 +19,10 @@ def launchOnServer(filename, name, role):
     if role != "master" :
         opt = " -maddr " + master
     if role == "client":
-        opt += " -v " + " ".join(client_option[protocol])
+        opt += " -v " + " -server " + servers[0] + " " + " ".join(client_option[protocol])
     elif role == "server":
-        opt += " -port %s " % (7070 + servers.index(name)) + " ".join(server_option[protocol])
+        opt += " -port %s " % (7070 + servers.index(name)) + "-addr " + name + " ".join(server_option[protocol])
+        print(opt)
     subprocess.run([f"ssh {username}@{name} ./shreplic/bin/shr-{role}" + opt], shell=True, stdout=f, stderr=f)
 
 def main():
