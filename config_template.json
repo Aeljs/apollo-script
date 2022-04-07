@@ -1,0 +1,22 @@
+{
+		"server-prefix": "apollo-",
+		"master": "",
+		"server": ["", "", ""],
+		"client": ["", ""],
+
+    "protocol": "name",
+
+    "server_option" :
+					{"paxos" : [""],
+					"epaxos" : ["-epaxos", "-thrifty"],
+					"paxoi": ["-paxoi"]},
+    "client_option" :
+					{"paxos" : [""],
+					"epaxos" : ["-e"],
+					"paxoi": ["-f"]},
+
+    "path_server" : "~/shreplic/bin/",
+    "file_name": "result/",
+
+		"gitAndCompile" : false
+}
