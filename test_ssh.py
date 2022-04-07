@@ -15,13 +15,25 @@ config_file = "config"
 username = "theo.dupuy"
 ssh_key = "/home/theodupuy/.ssh/"
 
+def getTheLogFile(name):
+    if client_clone[client.index(name)] != 0 :
+        save_clone = savefiles + "c-" + name + "/"
+        os.makedirs(save_clone)
+        subprocess.run(["rsync -r " + username + "@" + name + ":" + clone_filename + " " + save_clone], shell=True, stdout=subprocess.PIPE)
+        subprocess.run([f"ssh {username}@{name} rm {clone_filename}*"], shell=True, stdout=subprocess.PIPE)
+
+
 def launchOnServer(filename, name, role):
     f = open(filename, 'w')
     opt = ""
     if role != "master" :
         opt = " -maddr " + master
     if role == "client":
-        opt += " -v " + " -server " + random.choice(servers) + " " + " ".join(client_option[protocol])
+        opt += " -v " + "-server " + random.choice(servers) + " -q %s " % request_number
+        if client_clone[client.index(name)] != 0 :
+            opt += "-clone %s " % client_clone[client.index(name)]
+            opt += "-logf " + clone_filename + "c "
+        opt += (" ".join(client_option[protocol])).replace("<nb-servers>", str(len(servers)))
         print(opt)
     elif role == "server":
         opt += " -port %s " % (7070 + servers.index(name)) + "-addr " + name + " " + " ".join(server_option[protocol])
@@ -30,6 +42,9 @@ def launchOnServer(filename, name, role):
         opt += " -N %s" % len(servers)
         print(opt)
     subprocess.run([f"ssh {username}@{name} ./shreplic/bin/shr-{role}" + opt], shell=True, stdout=f, stderr=f)
+    if role == "client":
+        print("Client %s has finished" % name)
+        getTheLogFile(name)
 
 
 def stopAllProcess(sig, frame):
@@ -43,7 +58,6 @@ def stopAllProcess(sig, frame):
     client = [prefix + s for s in config["client"] if s != ""]
 
     cluster = {"master" : [master], "server": servers, "client" : client}
-    path = config["path"]
 
     print("kill the process on the cluster")
     for k, t in cluster.items():
@@ -65,7 +79,9 @@ def main():
     print(config)
 
     #result files
-    savefiles = config["file_name"] + datetime.datetime.now().strftime("%d-%m-%y;%X") + "/"
+    global savefiles
+    savefiles = config["file_name"] + datetime.datetime.now().strftime("%d-%m-%y_%X") + "/"
+    print(savefiles)
     try:
         os.makedirs(savefiles)
     except FileExistsError as e:
@@ -76,8 +92,10 @@ def main():
     global protocol
     global server_option
     global client_option
+    global request_number
     server_option = config["server_option"]
     client_option = config["client_option"]
+    request_number = config["request_number"]
     protocol = config["protocol"]
     if not protocol in server_option:
         print('Wrong protocole name')
@@ -92,14 +110,17 @@ def main():
     prefix = config["server-prefix"]
     global master
     global servers
+    global client
+    global client_clone
     master = prefix + config["master"]
     servers = [prefix + s for s in config["server"] if s != ""]
     client = [prefix + s for s in config["client"] if s != ""]
+    client_clone = [x for s, x in config["client"].items() if s != ""]
 
+    global clone_filename
+    clone_filename = config["clone_filename"]
 
     cluster = {"master" : [master], "server": servers, "client" : client}
-    cluster_ssh = {}
-    path = config["path"]
 
     if config["gitAndCompile"] :
         print("clone and compile the file on the cluster")
@@ -125,6 +146,11 @@ def main():
                 #Compile the programm
                 _stdin, _stdout,_stderr = ssh_client.exec_command("cd shreplic && make")
                 print(v + " : " + _stdout.read().decode())
+
+                if k == "client":
+                    #Create the directory for the clone log
+                    _stdin, _stdout,_stderr = ssh_client.exec_command("mkdir -p " + clone_filename)
+                    print(v + " : " + _stdout.read().decode())
 
                 ssh_client.close()
     else :
