@@ -2,7 +2,9 @@
 		"server-prefix": "apollo-",
 		"master": "",
 		"server": ["", "", ""],
-		"client": ["", ""],
+		"client": {"": 0, "": 0},
+
+		"request_number": 1000,
 
     "protocol": "name",
 
@@ -13,10 +15,10 @@
     "client_option" :
 					{"paxos" : [""],
 					"epaxos" : ["-e"],
-					"paxoi": ["-f"]},
+					"paxoi": ["-args", "\"-N <nb-servers>", "-pclients 0 \"", "-f"]},
 
-    "path_server" : "~/shreplic/bin/",
+		"clone_filename": "shreplic/clone_log/",
     "file_name": "result/",
 
-		"gitAndCompile" : false
+		"gitAndCompile" : true
 }
