@@ -25,7 +25,7 @@ def launchOnServer(filename, name, role):
     if role != "master" :
         opt = " -maddr " + master
     if role == "client":
-        opt += " -v " + "-server " + random.choice(servers) + " -q %s " % request_number
+        opt += " -v " + "-server " + random.choice(servers) + " -q %s " % request_number + "-c %s " % conflict_percentage
         if client_clone[client.index(name)] != 0 :
             opt += "-clone %s " % client_clone[client.index(name)]
             opt += "-logf " + clone_filename + "c "
@@ -96,9 +96,12 @@ def main():
     global server_option
     global client_option
     global request_number
+    global conflict_percentage
+
     server_option = config["server_option"]
     client_option = config["client_option"]
     request_number = config["request_number"]
+    conflict_percentage = config["conflict_percentage"]
     protocol = config["protocol"]
     if not protocol in server_option:
         print('Wrong protocole name')
