@@ -11,10 +11,6 @@ import re
 import random
 
 
-config_file = "config"
-username = "theo.dupuy"
-ssh_key = "/home/theodupuy/.ssh/"
-
 def getTheLogFile(name):
     if client_clone[client.index(name)] != 0 :
         save_clone = savefiles + "c-" + name + "/"
@@ -73,6 +69,13 @@ def stopAllProcess(sig, frame):
 
 
 def main():
+    #get the log file by args
+    if len(sys.argv) <= 1 :
+        print("You need to give the configuration file by arguments")
+        exit(0)
+    else:
+        global config_file
+        config_file = sys.argv[1]
     #Load the config file
     with open(config_file, 'r') as f:
         config = json.load(f)
@@ -119,7 +122,9 @@ def main():
 
     global clone_filename
     clone_filename = config["clone_filename"]
-
+    global username
+    username = config["username_server"]
+    ssh_key = config["ssh_dir"]
     cluster = {"master" : [master], "server": servers, "client" : client}
 
     if config["gitAndCompile"] :

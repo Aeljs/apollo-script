@@ -5,20 +5,23 @@
 		"client": {"": 0, "": 0},
 
 		"request_number": 1000,
+		"conflict_percentage": 50,
 
     "protocol": "name",
 
     "server_option" :
 					{"paxos" : [""],
 					"epaxos" : ["-epaxos", "-thrifty"],
-					"paxoi": ["-paxoi"]},
+					"paxoi": ["-paxoi", "-optexec"]},
     "client_option" :
 					{"paxos" : [""],
 					"epaxos" : ["-e"],
-					"paxoi": ["-args", "\"-N <nb-servers>", "-pclients 0 \"", "-f"]},
+					"paxoi": ["-paxoi", "-args", "\"-N <nb-servers>", "-pclients 0 \"", "-f"]},
 
 		"clone_filename": "shreplic/clone_log/",
     "file_name": "result/",
+		"username_server": "theo.dupuy",
+		"ssh_dir": "/home/theodupuy/.ssh/",
 
 		"gitAndCompile" : true
 }
