@@ -1,0 +1,33 @@
+{
+		"server-prefix": "apollo-",
+		"master": "2-11",
+		"server": ["2-12", "2-10", "2-9"],
+		"client": {"2-8": 1, "2-7": 1},
+
+		"request_number": 1,
+		"conflict_percentage": 50,
+
+    	"protocol": "paxos",
+
+    	"server_option" :
+					{"paxos" : [""],
+					"epaxos" : ["-epaxos", "-thrifty"],
+					"paxoi": ["-paxoi", "-optexec"]},
+    	"client_option" :
+					{"paxos" : [""],
+					"epaxos" : ["-e"],
+					"paxoi": ["-args", "\"-N <nb-servers>", "-pclients 0 \"", "-f", "-paxoi"]},
+
+		"directory_name": "shreplic",
+		"exec_prefixe": "shr",
+		"git": true,
+		"git_name": "git@github.com:vonaka/shreplic.git",
+		"path_directory": "/home/username//shreplic/",
+
+		"clone_filename": "shreplic/clone_log/",
+    	"file_name": "result/",
+		"username_server": "username",
+		"ssh_dir": "/home/username/.ssh/",
+
+		"gitAndCompile" : true
+}
