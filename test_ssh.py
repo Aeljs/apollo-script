@@ -37,7 +37,11 @@ def launchOnServer(filename, name, role):
 	elif role == "master":
 		opt += " -N %s" % len(servers)
 		print(opt)
-	subprocess.run([f"ssh {username}@{name} ./{directory_name}/bin/{exec_prefixe}-{role}" + opt], shell=True, stdout=f, stderr=f)
+	command = f"\"./{directory_name}/bin/{exec_prefixe}-{role}" + opt + '\"'
+	f.write(command + "\n")
+	completed = subprocess.run([f"ssh {username}@{name} " + command], shell=True, stdout=f, stderr=f)
+	print(completed)
+	print(completed.returncode)
 	if role == "client":
 		print("Client %s has finished" % name)
 		getTheLogFile(name)

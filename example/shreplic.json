@@ -16,7 +16,7 @@
     	"client_option" :
 					{"paxos" : [""],
 					"epaxos" : ["-e"],
-					"paxoi": ["-args", "\"-N <nb-servers>", "-pclients 0 \"", "-f", "-paxoi"]},
+					"paxoi": ["-args", "'-N <nb-servers>", "-pclients 0'", "-f", "-paxoi"]},
 
 		"directory_name": "shreplic",
 		"exec_prefixe": "shr",

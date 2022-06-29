@@ -16,7 +16,7 @@
     	"client_option" :
 					{"paxos" : [""],
 					"epaxos" : ["-e"],
-					"paxoi": ["-paxoi", "-args", "\"-N <nb-servers>", "-pclients 0 \"", "-f"]},
+					"paxoi": ["-args", "'-N <nb-servers>", "-pclients 0'", "-f", "-paxoi"]},
 
 		"directory_name": "",
 		"exec_prefixe": "",
