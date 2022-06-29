@@ -20,7 +20,7 @@ def getTheLogFile(name):
 
 
 def launchOnServer(filename, name, role):
-	f = open(filename, 'w')
+	f = open(filename, 'a')
 	opt = ""
 	if role != "master" :
 		opt = " -maddr " + master
@@ -208,15 +208,18 @@ def main():
 	print("Waiting for the servers to connect")
 
 	time.sleep(1)
-	while True:
-		f = open(savefiles + "server-" + servers[0], "r")
-		lines = f.readlines()
-		r = re.compile(".*Waiting for client connections*")
-		newlist = list(filter(r.match, lines))
-		if len(newlist) != 0 :
-			print("Server settle")
-			break;
-		time.sleep(1)
+	for k, t in cluster.items():
+		for v in t :
+			if k == "server":
+				while True:
+					f = open(savefiles + "server-" + v, "r")
+					lines = f.readlines()
+					r = re.compile(".*Waiting for client connections*")
+					newlist = list(filter(r.match, lines))
+					if len(newlist) != 0 :
+						print("Server settle")
+						break;
+					time.sleep(1)
 
 	#Launch clients
 	print("Launch clients")
