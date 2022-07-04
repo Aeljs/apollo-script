@@ -31,5 +31,7 @@
 		"username_server": "username",
 		"ssh_dir": "/home/username/.ssh/",
 
-		"gitAndCompile" : true
+		"gitAndCompile" : true,
+
+		"latency": true
 }

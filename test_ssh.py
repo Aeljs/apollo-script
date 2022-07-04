@@ -10,6 +10,7 @@ import json
 import re
 import random
 
+from latency import getLatency
 
 def getTheLogFile(name):
 	if client_clone[client.index(name)] != 0 :
@@ -51,6 +52,8 @@ def launchOnServer(filename, name, role):
 	if role == "client":
 		print("Client %s has finished" % name)
 		getTheLogFile(name)
+		if latency:
+			getLatency(filename)
 
 
 def stopAllProcess(sig, frame):
@@ -139,6 +142,8 @@ def main():
 	quorum_file = config["quorum_file"]
 	global clone_filename
 	clone_filename = config["clone_filename"]
+	global latency
+	latency = config["latency"]
 	global username
 	username = config["username_server"]
 	ssh_key = config["ssh_dir"]
