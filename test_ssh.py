@@ -25,7 +25,7 @@ def launchOnServer(filename, name, role):
 	if role != "master" :
 		opt = " -maddr " + master
 	if role == "client":
-		opt += " -v " + "-server " + random.choice(servers) + " -q %s " % request_number + "-c %s " % conflict_percentage
+		opt += " -v " + "-server " + random.choice(servers) + " -q %s " % request_number + "-c %s -w %s " % (conflict_percentage, writing_percentage)
 		if client_clone[client.index(name)] != 0 :
 			opt += "-clone %s " % client_clone[client.index(name)]
 			opt += "-logf " + clone_filename + "c "
@@ -33,12 +33,18 @@ def launchOnServer(filename, name, role):
 		print(opt)
 	elif role == "server":
 		opt += " -port %s " % (7070 + servers.index(name)) + "-addr " + name + " " + " ".join(server_option[protocol])
+		if quorum_file != "":
+			opt += "-quorum " + quorum_file
 		print(opt)
 	elif role == "master":
 		opt += " -N %s" % len(servers)
 		print(opt)
+
+	c = open(savefiles + "config", 'a')
 	command = f"\"./{directory_name}/bin/{exec_prefixe}-{role}" + opt + '\"'
-	f.write(command + "\n")
+	c.write(command + "\n")
+	c.close()
+
 	completed = subprocess.run([f"ssh {username}@{name} " + command], shell=True, stdout=f, stderr=f)
 	print(completed)
 	print(completed.returncode)
@@ -101,11 +107,13 @@ def main():
 	global client_option
 	global request_number
 	global conflict_percentage
+	global writing_percentage
 
 	server_option = config["server_option"]
 	client_option = config["client_option"]
 	request_number = config["request_number"]
 	conflict_percentage = config["conflict_percentage"]
+	writing_percentage = config["writing_percentage"]
 	protocol = config["protocol"]
 	if not protocol in server_option:
 		print('Wrong protocole name')
@@ -113,8 +121,8 @@ def main():
 
 	#Verify that all names are unique
 	for s in config["server"]:
-		if s != "" and (s in config["client"] or s == config["master"]):
-			print("Servers, master and clients can't be on the same server")
+		if s != "" and s == config["master"]:
+			print("Servers and master can't be on the same server")
 			exit(0)
 
 	prefix = config["server-prefix"]
@@ -127,6 +135,8 @@ def main():
 	client = [prefix + s for s in config["client"] if s != ""]
 	client_clone = [x for s, x in config["client"].items() if s != ""]
 
+	global quorum_file
+	quorum_file = config["quorum_file"]
 	global clone_filename
 	clone_filename = config["clone_filename"]
 	global username

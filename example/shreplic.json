@@ -6,6 +6,8 @@
 
 		"request_number": 1,
 		"conflict_percentage": 50,
+		"writing_percentage": 50,
+		"quorum_file": "",
 
     	"protocol": "paxos",
 
