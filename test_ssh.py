@@ -10,7 +10,7 @@ import json
 import re
 import random
 
-from latency import getLatency
+from latency import getLatency, getLatencyDir
 
 def getTheLogFile(name):
 	if client_clone[client.index(name)] != 0 :
@@ -35,7 +35,7 @@ def launchOnServer(filename, name, role):
 	elif role == "server":
 		opt += " -port %s " % (7070 + servers.index(name)) + "-addr " + name + " " + " ".join(server_option[protocol])
 		if quorum_file != "":
-			opt += "-quorum " + quorum_file
+			opt += "-qfile " + quorum_file
 		print(opt)
 	elif role == "master":
 		opt += " -N %s" % len(servers)
@@ -53,7 +53,10 @@ def launchOnServer(filename, name, role):
 		print("Client %s has finished" % name)
 		getTheLogFile(name)
 		if latency:
-			getLatency(filename)
+			if client_clone[client.index(name)] != 0 :
+				getLatencyDir(savefiles + "c-" + name + "/")
+			else:
+				getLatency(filename)
 
 
 def stopAllProcess(sig, frame):
@@ -96,7 +99,7 @@ def main():
 
 	#result files
 	global savefiles
-	savefiles = config["file_name"] + datetime.datetime.now().strftime("%d-%m-%y_%X") + "/"
+	savefiles = config["file_name"] + datetime.datetime.now().strftime("%d-%m-%y_%X_") + config["directory_name"] + "/"
 	print(savefiles)
 	try:
 		os.makedirs(savefiles)
@@ -203,6 +206,7 @@ def main():
 
 					if k == "client":
 						#Create the directory for the clone log
+						_stdin, _stdout,_stderr = ssh_client.exec_command("rm -r " + clone_filename)
 						_stdin, _stdout,_stderr = ssh_client.exec_command("mkdir -p " + clone_filename)
 						print(v + " : " + _stdout.read().decode())
 					ssh_client.close()

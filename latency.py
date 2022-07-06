@@ -10,6 +10,8 @@ def getLatency(filename):
 	r = re.compile(".*latency *")
 	newlist = list(filter(r.match, lines))
 	latency = []
+	if len(newlist) == 0:
+		exit(0)
 	for v in newlist:
 		res = v[0:-1]
 		res = res[res.rfind(" ") + 1:]
@@ -24,14 +26,16 @@ def getLatency(filename):
 	f.write("\n")
 	f.write("\n".join(map(str, latency)))
 
+def getLatencyDir(directory):
+	print(directory)
+	for f in glob.glob(directory + "/c*"):
+		getLatency(f)
 
 def main():
 	if len(sys.argv) <= 1 :
 		print("You need to give the directory name by arguments")
 		exit(0)
 	directory = sys.argv[1]
-	print(directory)
-	for f in glob.glob(directory + "/client*"):
-		getLatency(f)
-
+	getLatencyDir(directory)
+	
 main()
