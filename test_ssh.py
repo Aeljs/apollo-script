@@ -35,7 +35,7 @@ def launchOnServer(filename, name, role):
 	elif role == "server":
 		opt += " -port %s " % (7070 + servers.index(name)) + "-addr " + name + " " + " ".join(server_option[protocol])
 		if quorum_file != "":
-			opt += "-qfile " + quorum_file
+			opt += " -qfile " + quorum_file
 		print(opt)
 	elif role == "master":
 		opt += " -N %s" % len(servers)
@@ -47,16 +47,15 @@ def launchOnServer(filename, name, role):
 	c.close()
 
 	completed = subprocess.run([f"ssh {username}@{name} " + command], shell=True, stdout=f, stderr=f)
-	print(completed)
-	print(completed.returncode)
 	if role == "client":
-		print("Client %s has finished" % name)
 		getTheLogFile(name)
 		if latency:
 			if client_clone[client.index(name)] != 0 :
 				getLatencyDir(savefiles + "c-" + name + "/")
 			else:
 				getLatency(filename)
+		else:
+			print("Client %s has finished" % name)
 
 
 def stopAllProcess(sig, frame):
