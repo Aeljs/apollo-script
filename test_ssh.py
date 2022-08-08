@@ -42,7 +42,7 @@ def launchOnServer(filename, name, role):
 		print(opt)
 
 	c = open(savefiles + "config", 'a')
-	command = f"\"./{directory_name}/bin/{exec_prefixe}-{role}" + opt + '\"'
+	command = f"\"./{directory_name}/bin/{exec_prefix}-{role}" + opt + '\"'
 	c.write(command + "\n")
 	c.close()
 
@@ -73,7 +73,7 @@ def stopAllProcess(sig, frame):
 	print("kill the process on the cluster")
 	for k, t in cluster.items():
 		for v in t :
-			res = subprocess.run([f"ssh {username}@{v} ps -C {exec_prefixe}-{k} -o pid="], shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+			res = subprocess.run([f"ssh {username}@{v} ps -C {exec_prefix}-{k} -o pid="], shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 			try:
 				pid = res.stdout
 				subprocess.run([f"ssh {username}@{v} kill -9 {int(pid)}"], shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -152,12 +152,12 @@ def main():
 	cluster = {"master" : [master], "server": servers, "client" : client}
 	#Get the proper name
 	global directory_name
-	global exec_prefixe
+	global exec_prefix
 	directory_name = config["directory_name"]
-	exec_prefixe = config["exec_prefixe"]
+	exec_prefix = config["exec_prefix"]
 	git_name = config["git_name"]
 
-	if config["gitAndCompile"] :
+	if config["getAndCompile"] :
 		if config["git"]:
 			print("clone and compile the file on the cluster")
 			for k, t in cluster.items():

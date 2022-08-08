@@ -11,7 +11,7 @@ The configuration file is a json file, you need to specify :
 - The number of request of each client
 - The protocol name you want to run, and the options for it. Even if you don't have any other options to add you must add it to `server_option` and to `client_option`
 - `directory_name` is the name of the directory where the code will end up
-- `exec_prefixe` will help to launch and kill all the process (for example for shreplic it will be shr, gbr for gbroadcast...)
+- `exec_prefix` will help to launch and kill all the process (for example for shreplic it will be shr, gbr for gbroadcast...)
 - `git` will be true if you want to use the git to be sure to have a stable version, if it's false you will synchronize the files from your computer
 - `git_name` will help to git clone, will only be used if git is true
 - `path_directory` is where to code is on your computer, will only be needed if git is false
@@ -19,4 +19,4 @@ The configuration file is a json file, you need to specify :
 - The `file_name` is where you want to keep the results of the run. Each launch will be separate in a sub-directory with the date.
 - The username of the server for the connection through ssh
 - The directory where you have a ssh key to git clone/git pull
-- `gitAndCompile` is if you want to git clone/git pull and compile each time you launch, needed to be true if you use servers you never used before
+- `getAndCompile` is if you want to git clone/git pull and compile each time you launch, needed to be true if you use servers you never used before
