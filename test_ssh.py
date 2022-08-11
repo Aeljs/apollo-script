@@ -26,7 +26,7 @@ def launchOnServer(filename, name, role):
 	if role != "master" :
 		opt = " -maddr " + master
 	if role == "client":
-		opt += " -v " + "-server " + random.choice(servers) + " -q %s " % request_number + "-c %s -w %s " % (conflict_percentage, writing_percentage)
+		opt += " -v " + "-server " + servers[client.index(name) % len(servers)] + " -q %s " % request_number + "-c %s -w %s " % (conflict_percentage, writing_percentage)
 		if client_clone[client.index(name)] != 0 :
 			opt += "-clone %s " % client_clone[client.index(name)]
 			opt += "-logf " + clone_filename + "c "
