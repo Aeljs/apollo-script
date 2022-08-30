@@ -9,6 +9,7 @@ import paramiko
 import json
 import re
 import random
+import atomics
 
 from latency import getLatency, getLatencyDir
 
@@ -57,8 +58,12 @@ def launchOnServer(filename, name, role):
 		else:
 			print("Client %s has finished" % name)
 
+		count.inc()
+		if count.load() == len(client) :
+			stopAllProcess()
+			#os.kill(os.getpid(), signal.SIGINT)
 
-def stopAllProcess(sig, frame):
+def stopAllProcess():
 	#Load the config file
 	with open(config_file, 'r') as f:
 		config = json.load(f)
@@ -80,6 +85,9 @@ def stopAllProcess(sig, frame):
 			except Exception as e:
 				print(pid)
 
+
+def sigCatch(sig, frame):
+	stopAllProcess()
 	sys.exit(0)
 
 
@@ -96,15 +104,6 @@ def main():
 		config = json.load(f)
 	print(config)
 
-	#result files
-	global savefiles
-	savefiles = config["file_name"] + datetime.datetime.now().strftime("%d-%m-%y_%X_") + config["directory_name"] + "/"
-	print(savefiles)
-	try:
-		os.makedirs(savefiles)
-	except FileExistsError as e:
-		for f in os.listdir(savefiles):
-			os.remove(savefiles + f)
 
 	#verify the protocol is correct
 	global protocol
@@ -149,6 +148,7 @@ def main():
 	global username
 	username = config["username_server"]
 	ssh_key = config["ssh_dir"]
+	global cluster
 	cluster = {"master" : [master], "server": servers, "client" : client}
 	#Get the proper name
 	global directory_name
@@ -213,8 +213,32 @@ def main():
 	else :
 		print("Clone and compile : Skip")
 
+
+def launch():
+	#Load the config file
+	with open(config_file, 'r') as f:
+		config = json.load(f)
+	print(config)
+
+	#result files
+	global savefiles
+	savefiles = config["file_name"] + datetime.datetime.now().strftime("%d-%m-%y_%X_") + config["directory_name"] + "/"
+	print(savefiles)
+	try:
+		os.makedirs(savefiles)
+	except FileExistsError as e:
+		for f in os.listdir(savefiles):
+			os.remove(savefiles + f)
+
+	global count
+	count = atomics.atomic(width=4, atype=atomics.INT)
+
 	print("Launch")
-	signal.signal(signal.SIGINT, stopAllProcess)
+	signal.signal(signal.SIGINT, sigCatch)
+
+	c = open(savefiles + "config", 'a')
+	c.write(config["protocol"] + "\n")
+	c.close()
 
 	for k, t in cluster.items():
 		for v in t :
@@ -241,9 +265,18 @@ def main():
 
 	#Launch clients
 	print("Launch clients")
+	cThread = []
 	for v in client :
-		threading.Thread(target=launchOnServer, name=f"client_{v}", args=(savefiles + "client-" + v, v, "client")).start()
+		cThread += [threading.Thread(target=launchOnServer, name=f"client_{v}", args=(savefiles + "client-" + v, v, "client"))]
+
+	for t in cThread:
+		t.start()
 
 	print("Main thread done")
 
+	for t in cThread:
+		t.join()
+
 main()
+for _ in range(10):
+	launch()
