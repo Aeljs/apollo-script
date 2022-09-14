@@ -21,7 +21,7 @@
 					"paxoi": ["-args", "'-N <nb-servers>", "-pclients 0'", "-f", "-paxoi"]},
 
 		"directory_name": "shreplic",
-		"exec_prefixe": "shr",
+		"exec_prefix": "shr",
 		"git": true,
 		"git_name": "git@github.com:vonaka/shreplic.git",
 		"path_directory": "/home/username//shreplic/",
@@ -31,7 +31,7 @@
 		"username_server": "username",
 		"ssh_dir": "/home/username/.ssh/",
 
-		"gitAndCompile" : true,
+		"getAndCompile" : true,
 
 		"latency": true
 }

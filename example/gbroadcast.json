@@ -21,7 +21,7 @@
 					"paxoi": ["-args", "\"-N <nb-servers>", "-pclients 0 \"", "-f", "-paxoi"]},
 
 		"directory_name": "gbroadcast",
-		"exec_prefixe": "gbr",
+		"exec_prefix": "gbr",
 		"git": false,
 		"git_name": "git@github.com:Aeljs/gbroadcast.git",
 		"path_directory": "/home/username/Documents/stage/gbroadcast/",
@@ -31,7 +31,7 @@
 		"username_server": "username",
 		"ssh_dir": "/home/username/.ssh/",
 
-		"gitAndCompile" : true,
+		"getAndCompile" : true,
 
 		"latency": true
 }
