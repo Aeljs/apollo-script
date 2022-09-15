@@ -13,6 +13,8 @@ import atomics
 
 from latency import getLatency, getLatencyDir
 
+from graph import createGraph
+
 def getTheLogFile(name):
 	if client_clone[client.index(name)] != 0 :
 		save_clone = savefiles + "c-" + name + "/"
@@ -278,5 +280,7 @@ def launch():
 		t.join()
 
 main()
-for _ in range(10):
+for _ in range(1):
 	launch()
+
+createGraph("result/")
