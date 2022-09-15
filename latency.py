@@ -39,6 +39,9 @@ def main():
 	directory = sys.argv[1]
 	getLatencyDir(directory)
 
+if __name__ == '__main__':
+	main()
+
 def generateLatency():
 	#get the log file by args
 	if len(sys.argv) <= 1 :
@@ -56,6 +59,3 @@ def generateLatency():
 	for i in range(len(servers)):
 		for j in range(len(servers)):
 			f.write(servers[i] + " " + servers[j] + " 10ms\n")
-
-
-#generateLatency()
