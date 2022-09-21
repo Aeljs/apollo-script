@@ -12,7 +12,7 @@ import random
 import atomics
 
 from latency import getLatency, getLatencyDir
-
+from latencyAWS import getLatencyAws, generateLatency
 from graph import createGraph
 
 def getTheLogFile(name):
@@ -214,6 +214,17 @@ def main():
 
 	else :
 		print("Clone and compile : Skip")
+	#Latency conf AWS
+	conf_latency = config["conf_latency"]
+	if len(conf_latency) != 0:
+		print(conf_latency)
+
+		aws = getLatencyAws()
+		generateLatency(servers, client, conf_latency, aws)
+
+	conf_file = config["conf_file"]
+	for ser in servers :
+		subprocess.run(["rsync", "-r", "latency.conf", username + "@" + ser + ":" + conf_file], stdout=subprocess.PIPE)
 
 
 def launch():
@@ -224,6 +235,8 @@ def launch():
 
 	#result files
 	global savefiles
+	global result
+	result = config["file_name"]
 	savefiles = config["file_name"] + datetime.datetime.now().strftime("%d-%m-%y_%X_") + config["directory_name"] + "/"
 	print(savefiles)
 	try:
@@ -280,7 +293,7 @@ def launch():
 		t.join()
 
 main()
-for _ in range(1):
+for _ in range(5):
 	launch()
 
 createGraph("result/")
