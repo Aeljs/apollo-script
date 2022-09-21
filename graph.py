@@ -15,7 +15,7 @@ def getLatency(filename):
 
 	#Get the conflict rate
 	c = lines[-1]
-	c = c[c.find(" -c "):]
+	c = c[c.find(" -w"):]
 	conflict = c[4:c.find(" ", 4)]
 	print(conflict)
 
@@ -78,7 +78,7 @@ def createGraph(directory):
 
 	#Create the graph associated
 
-	ytikcs = [k for k in range(10,21)]
+	#ytikcs = [k for k in range(10,21)]
 	xtikcs = [k for k in range(0,101,20)]
 
 	colors = {}
@@ -91,9 +91,10 @@ def createGraph(directory):
 		for c, latency in conflict.items():
 			plt.subplot(1, len(dict), subplot)
 
+			#plt.plot([int(c)], sum(latency) / len(latency), "o")
 			plt.bar(int(c), latency[-1]-latency[0], 1.5, bottom=latency[0], color=colors[prot])
 			plt.title(prot)
-			plt.yticks(ytikcs)
+		#	plt.yticks(ytikcs)
 			plt.xticks(xtikcs)
 
 	plt.savefig(directory + "graph.pdf", bbox_inches='tight')
