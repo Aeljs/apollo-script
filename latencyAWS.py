@@ -54,6 +54,9 @@ def generateLatency(servers, clients, region, latency):
 			f.write(src + " " + dst + " " + latency[servRegion[src]][servRegion[dst]] + "ms\n")
 		for dst in clients:
 			f.write(src + " " + dst + " " + latency[servRegion[src]][clientRegion[dst]] + "ms\n")
+	for src in clients:
+		for dst in servers:
+			f.write(src + " " + dst + " " + latency[clientRegion[src]][servRegion[dst]] + "ms\n")
 
 	print(servRegion)
 
