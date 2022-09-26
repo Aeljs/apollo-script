@@ -1,4 +1,6 @@
 import requests
+import sys
+import json
 
 url = "https://www.cloudping.co/grid/p_90/timeframe/1Y#"
 
@@ -60,5 +62,22 @@ def generateLatency(servers, clients, region, latency):
 
 	print(servRegion)
 
+def generate(file, latency):
+	#Load the config file
+	with open(file, 'r') as f:
+		config = json.load(f)
+	prefix = config["server-prefix"]
+	servers = [prefix + s for s in config["server"] if s != ""]
+	client = [prefix + s for s in config["client"] if s != ""]
+	region = config["conf_latency"]
+	if len(region) != 0:
+		generateLatency(servers, client, region, latency)
+
+
 if __name__ == '__main__':
-	getLatencyAws()
+	latency = getLatencyAws()
+	if len(sys.argv) <= 1 :
+		print("You need to give the configuration file by arguments")
+		exit(0)
+	else:
+		generate(sys.argv[1], latency)
