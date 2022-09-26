@@ -5,11 +5,18 @@
 ## Configuration file
 [Example file](config_template.json)
 
+[Example gbroadcast file](example/gbroadcast.json)
+
+[Example shreplic file](example/shreplic.json)
+
 The configuration file is a json file, you need to specify :
 - The name of the server where the master, the servers and the clients will run. You can add the `server-prefix` to have less to change. You can leave empty string, it will not harm the script. The label `client` is a dictionary with the number of clone you want to launch, it doesn't count the primary client in it.
+- The array `conf_latency` specify if you want to use specific latency with specific AWS region. The region code are [here](https://www.cloudping.co/grid/p_90/timeframe/1Y) and you can have more precision and launch it by hand with the script [latency AWS](latencyAWS.py)
 - The number of request of each client
 - The conflict and writing percentage
+- `quorum_file` is where the quorum file is to pass it by argument. Do not copy a quorum file to the servers
 - The protocol name you want to run, and the options for it. Even if you don't have any other options to add you must add it to `server_option` and to `client_option`
+- `conf_file` where you want to have your latency.conf
 - `directory_name` is the name of the directory where the code will end up
 - `exec_prefix` will help to launch and kill all the process (for example for shreplic it will be shr, gbr for gbroadcast...)
 - `git` will be true if you want to use the git to be sure to have a stable version, if it's false you will synchronize the files from your computer
