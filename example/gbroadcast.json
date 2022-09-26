@@ -4,22 +4,27 @@
 		"server": ["2-12", "2-10", "2-9"],
 		"client": {"2-8": 0, "2-7": 0},
 
+		"conf_latency": [],
+
 		"request_number": 1,
 		"conflict_percentage": 50,
 		"writing_percentage": 50,
 		"quorum_file": "gbroadcast/config/quorum.json",
 
-    	"protocol": "paxos",
+    	"protocol": "gbroadcast",
 
     	"server_option" :
 					{"paxos" : [""],
 					"epaxos" : ["-epaxos", "-thrifty"],
-					"paxoi": ["-paxoi", "-optexec"]},
+					"paxoi": ["-paxoi", "-optexec"],
+					"gbroadcast": ["-w 1 "]},
     	"client_option" :
 					{"paxos" : [""],
 					"epaxos" : ["-e"],
-					"paxoi": ["-args", "\"-N <nb-servers>", "-pclients 0 \"", "-f", "-paxoi"]},
+					"paxoi": ["-args", "\"-N <nb-servers>", "-pclients 0 \"", "-f", "-paxoi"],
+					"gbroadcast": ["-f true"]},
 
+		"conf_file": "gbroadcast",
 		"directory_name": "gbroadcast",
 		"exec_prefix": "gbr",
 		"git": false,

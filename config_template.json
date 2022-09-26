@@ -4,8 +4,12 @@
 		"server": ["", "", ""],
 		"client": {"": 0, "": 0},
 
+		"conf_latency": [],
+
 		"request_number": 1,
 		"conflict_percentage": 50,
+		"writing_percentage": 50,
+		"quorum_file": "",
 
     	"protocol": "name",
 
@@ -18,17 +22,19 @@
 					"epaxos" : ["-e"],
 					"paxoi": ["-args", "'-N <nb-servers>", "-pclients 0'", "-f", "-paxoi"]},
 
+		"conf_file": "",
 		"directory_name": "",
-		"exec_prefixe": "",
+		"exec_prefix": "",
 		"git": false,
 		"git_name": "",
 		"path_directory": "",
 
-
-		"clone_filename": "shreplic/clone_log/",
+		"clone_filename": "",
     	"file_name": "result/",
-		"username_server": "theo.dupuy",
-		"ssh_dir": "/home/theodupuy/.ssh/",
+		"username_server": "",
+		"ssh_dir": "",
 
-		"gitAndCompile" : true
+		"getAndCompile" : true,
+
+		"latency": true
 }

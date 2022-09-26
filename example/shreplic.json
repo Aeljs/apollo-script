@@ -4,6 +4,8 @@
 		"server": ["2-12", "2-10", "2-9"],
 		"client": {"2-8": 1, "2-7": 1},
 
+		"conf_latency": [],
+
 		"request_number": 1,
 		"conflict_percentage": 50,
 		"writing_percentage": 50,
@@ -20,6 +22,7 @@
 					"epaxos" : ["-e"],
 					"paxoi": ["-args", "'-N <nb-servers>", "-pclients 0'", "-f", "-paxoi"]},
 
+		"conf_file": "shreplic",
 		"directory_name": "shreplic",
 		"exec_prefix": "shr",
 		"git": true,
