@@ -36,14 +36,11 @@ def getLatencyAws():
 		for r in region:
 			i = t.find('">', i + 1)
 			e = t.find("</td", i + 1)
-			latency[reg][r] = t[i + 2:e]
+			latency[reg][r] = float(t[i + 2:e])
 
-	#print(latency)
 	return latency
 
-def generateLatency(servers, clients, region, latency):
-	print(servers)
-	f = open("latency.conf", "w")
+def getRegion(servers, clients, region):
 	servRegion = {}
 	clientRegion = {}
 	for i, s in enumerate(servers):
@@ -51,14 +48,21 @@ def generateLatency(servers, clients, region, latency):
 	for i, s in enumerate(clients):
 		clientRegion[s] = region[i % len(region)]
 
+	return servRegion, clientRegion
+
+
+def generateLatency(servers, clients, region, latency):
+	f = open("latency.conf", "w")
+
+	servRegion, clientRegion = getRegion(servers, clients, region)
 	for src in servers:
 		for dst in servers:
-			f.write(src + " " + dst + " " + latency[servRegion[src]][servRegion[dst]] + "ms\n")
+			f.write(src + " " + dst + " " + str(latency[servRegion[src]][servRegion[dst]]) + "ms\n")
 		for dst in clients:
-			f.write(src + " " + dst + " " + latency[servRegion[src]][clientRegion[dst]] + "ms\n")
+			f.write(src + " " + dst + " " + str(latency[servRegion[src]][clientRegion[dst]]) + "ms\n")
 	for src in clients:
 		for dst in servers:
-			f.write(src + " " + dst + " " + latency[clientRegion[src]][servRegion[dst]] + "ms\n")
+			f.write(src + " " + dst + " " + str(latency[clientRegion[src]][servRegion[dst]]) + "ms\n")
 
 	print(servRegion)
 
