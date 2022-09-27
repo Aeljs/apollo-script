@@ -87,11 +87,9 @@ def stopAllProcess():
 			except Exception as e:
 				print(pid)
 
-
 def sigCatch(sig, frame):
 	stopAllProcess()
 	sys.exit(0)
-
 
 def main():
 	#get the log file by args
@@ -226,6 +224,13 @@ def main():
 	for ser in servers :
 		subprocess.run(["rsync", "-r", "latency.conf", username + "@" + ser + ":" + conf_file], stdout=subprocess.PIPE)
 
+	quorum_suffix = quorum_file[quorum_file.rfind("/") + 1:]
+	if config["quorum_conf"]:
+		for ser in servers :
+			subprocess.run(["rsync", "-r", quorum_suffix, username + "@" + ser + ":" + quorum_file], stdout=subprocess.PIPE)
+	else:
+		for ser in servers :
+			subprocess.run(["rsync", "-r", username + "@" + ser + ":" + quorum_file, quorum_suffix], stdout=subprocess.PIPE)
 
 def launch():
 	#Load the config file

@@ -15,6 +15,7 @@ The configuration file is a json file, you need to specify :
 - The number of request of each client
 - The conflict and writing percentage
 - `quorum_file` is where the quorum file is to pass it by argument. Do not copy a quorum file to the servers
+- `quorum_conf` allow you to copy a quorum conf file to the server if true, if false, fetch the quorum file we need to use to compute the theoretical latency.
 - The protocol name you want to run, and the options for it. Even if you don't have any other options to add you must add it to `server_option` and to `client_option`
 - `conf_file` where you want to have your latency.conf
 - `directory_name` is the name of the directory where the code will end up
