@@ -8,11 +8,11 @@ import datetime
 import paramiko
 import json
 import re
-import random
 import atomics
+import shutil
 
 from latency import getLatency, getLatencyDir
-from latencyAWS import getLatencyAws, generateLatency
+from latencyAWS import getLatencyAws, generateLatency, computeTheoreticalLatencyWithQFile
 from graph import createGraph
 
 def getTheLogFile(name):
@@ -218,11 +218,13 @@ def main():
 		print(conf_latency)
 
 		aws = getLatencyAws()
+		with open("awsRegion.json", "w") as outfile:
+			json.dump(aws, outfile, ensure_ascii=False, indent=4)
 		generateLatency(servers, client, conf_latency, aws)
 
-	conf_file = config["conf_file"]
-	for ser in servers :
-		subprocess.run(["rsync", "-r", "latency.conf", username + "@" + ser + ":" + conf_file], stdout=subprocess.PIPE)
+		conf_file = config["conf_file"]
+		for ser in servers :
+			subprocess.run(["rsync", "-r", "latency.conf", username + "@" + ser + ":" + conf_file], stdout=subprocess.PIPE)
 
 	quorum_suffix = quorum_file[quorum_file.rfind("/") + 1:]
 	if config["quorum_conf"]:
@@ -258,7 +260,10 @@ def launch():
 
 	c = open(savefiles + "config", 'a')
 	c.write(config["protocol"] + "\n")
+	c.write(" ".join(config["conf_latency"]) + "\n")
 	c.close()
+
+	shutil.copyfile("awsRegion.json", savefiles + "awsRegion.json")
 
 	for k, t in cluster.items():
 		for v in t :
@@ -291,6 +296,21 @@ def launch():
 
 	for t in cThread:
 		t.start()
+
+	with open("awsRegion.json", 'r') as f:
+		aws = json.load(f)
+	c = open(savefiles + "config", 'r')
+	c.readline()
+	region = c.readline()[:-1].split(" ")
+	print("region")
+	print(region)
+	c = open(savefiles + "theoretical", 'a')
+	for v in client :
+		fp, sp = computeTheoreticalLatencyWithQFile(servers, client, v, aws, region)
+		c.write(v + " " + str(fp) + " " + str(sp) + "\n")
+
+	c.close()
+
 
 	print("Main thread done")
 

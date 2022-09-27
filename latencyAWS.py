@@ -77,6 +77,77 @@ def generate(file, latency):
 	if len(region) != 0:
 		generateLatency(servers, client, region, latency)
 
+def max(a, b):
+	if a > b:
+		return a
+	return b
+
+def computeTheoreticalLatency(server, client, origin, latency, region, fQuorum, leader):
+	servRegion, clientRegion = getRegion(server, client, region)
+
+	#We get compute each latency going from the leader to the server
+	leaderServers = {}
+	for s in server:
+		leaderServers[s] = latency[servRegion[leader]][servRegion[s]] / 2
+
+	#We get compute each latency going from the origin to the server
+	originServers = {}
+	#and the latency going from the server to the origin
+	serversOrigin = {}
+	for s in server:
+		originServers[s] = latency[clientRegion[origin]][servRegion[s]] / 2
+		serversOrigin[s] = latency[servRegion[s]][clientRegion[origin]] / 2
+
+	#We get the maximal latency for getting a response from the quorum
+	fastPath = 0
+	for s in fQuorum:
+		#We send the broadcast and we receive the propose
+		maxFast = originServers[s] + serversOrigin[s]
+		fastPath = max(fastPath, maxFast)
+		print(maxFast)
+
+	slowArray = []
+	for s in server:
+		if s == leader or s == origin :
+			continue
+		#we get the maximal between receiving something from the leader (origin to leader + leader to server)
+		#and receiving the broadcast (origin to server)
+		#to that we add the response (server to origin)
+		maxSlow = max(originServers[leader] + leaderServers[s], originServers[s]) + serversOrigin[s]
+		slowArray += [maxSlow]
+
+	slowArray.sort()
+	originLeader = originServers[leader] + serversOrigin[leader]
+	# we need to keep the servers where the latency is minimal
+	# we need to have the maximum of theses servers (everything arrived before it)
+	# the numbers of servers must be the size of a slow quorum, minus the leader
+	maxQuorum = len(server) // 2
+	slowPath = max(slowArray[maxQuorum], originLeader)
+
+	return fastPath, slowPath
+
+def computeTheoreticalLatencyWithQFile(server, client, origin, latency, region):
+	fQuorum, leader = getQuorum("quorum.json")
+	return computeTheoreticalLatency(server, client, origin, latency, region, fQuorum, leader)
+
+def getQuorum(file):
+	#Load the config file
+	with open(file, 'r') as f:
+		config = json.load(f)
+	print(config)
+	print(config["addr"][0])
+	return config["addr"][0], config["leadersAddr"][0]
+
+
+def generateQuorum(servers, client):
+	j = {"nbQuorums": 0}
+	# Serializing json
+	json_object = json.dumps({}, separators=(',', ':'))
+
+	# Writing to sample.json
+	with open("quorum.json", "w") as outfile:
+	    outfile.write(json_object)
+
 
 if __name__ == '__main__':
 	latency = getLatencyAws()
