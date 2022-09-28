@@ -12,7 +12,7 @@ import atomics
 import shutil
 
 from latency import getLatency, getLatencyDir
-from latencyAWS import getLatencyAws, generateLatency, computeTheoreticalLatencyWithQFile
+from latencyAWS import getLatencyAws, generateLatency, generateQuorum, computeTheoreticalLatencyWithQFile
 from graph import createGraph
 
 def getTheLogFile(name):
@@ -227,7 +227,12 @@ def main():
 			subprocess.run(["rsync", "-r", "latency.conf", username + "@" + ser + ":" + conf_file], stdout=subprocess.PIPE)
 
 	quorum_suffix = quorum_file[quorum_file.rfind("/") + 1:]
+	#We copy the quorum file to the server, or copy the quorum file from the server
 	if config["quorum_conf"]:
+		#If we have a conf latency we compute the best quorum
+		if len(conf_latency) != 0:
+			generateQuorum(config_file, aws)
+
 		for ser in servers :
 			subprocess.run(["rsync", "-r", quorum_suffix, username + "@" + ser + ":" + quorum_file], stdout=subprocess.PIPE)
 	else:
