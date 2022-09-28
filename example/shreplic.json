@@ -1,12 +1,12 @@
 {
-		"server-prefix": "apollo-",
-		"master": "2-11",
-		"server": ["2-12", "2-10", "2-9"],
-		"client": {"2-8": 1, "2-7": 1},
+		"server-prefix": "10.10.5.",
+		"master": "62",
+		"server": ["63", "64", "65", "66", "67"],
+		"client": {"68": 0,"69": 0,"70": 0,"71": 0,"72": 0},
 
 		"conf_latency": [],
 
-		"request_number": 1,
+		"request_number": 100,
 		"conflict_percentage": 50,
 		"writing_percentage": 50,
 		"quorum_file": "",
