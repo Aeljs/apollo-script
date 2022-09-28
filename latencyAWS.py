@@ -184,5 +184,5 @@ if __name__ == '__main__':
 		print("You need to give the configuration file by arguments")
 		exit(0)
 	else:
-		#generate(sys.argv[1], latency)
+		generate(sys.argv[1], latency)
 		generateQuorum(sys.argv[1], latency)

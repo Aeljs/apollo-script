@@ -12,7 +12,7 @@ def getLatency(filename):
 	newlist = list(filter(r.match, lines))
 	latency = []
 	if len(newlist) == 0:
-		exit(0)
+		return
 	for v in newlist:
 		res = v[0:-1]
 		res = res[res.rfind(" ") + 1:]
@@ -28,9 +28,12 @@ def getLatency(filename):
 	f.write("\n".join(map(str, latency)))
 
 def getLatencyDir(directory):
-	print(directory)
-	for f in glob.glob(directory + "/c*"):
-		getLatency(f)
+	#print(directory)
+	for f in glob.glob(directory + "/*"):
+		if os.path.isfile(f) :
+			getLatency(f)
+		else :
+			getLatencyDir(f)
 
 def main():
 	if len(sys.argv) <= 1 :
@@ -41,21 +44,3 @@ def main():
 
 if __name__ == '__main__':
 	main()
-
-def generateLatency():
-	#get the log file by args
-	if len(sys.argv) <= 1 :
-		print("You need to give the configuration file by arguments")
-		exit(0)
-	config_file = sys.argv[1]
-	#Load the config file
-	with open(config_file, 'r') as f:
-		config = json.load(f)
-
-	prefix = config["server-prefix"]
-	servers = [prefix + s for s in config["server"] if s != ""]
-	print(servers)
-	f = open("latency.conf", "w")
-	for i in range(len(servers)):
-		for j in range(len(servers)):
-			f.write(servers[i] + " " + servers[j] + " 10ms\n")
