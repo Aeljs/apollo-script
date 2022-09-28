@@ -2,10 +2,11 @@ import glob
 import matplotlib.pyplot as plt
 
 class Result:
-	def __init__(self, file, protocolName, conflictRate, clients, theoretical):
+	def __init__(self, file, protocolName, conflictRate, nbClients, clients, theoretical):
 		self.file = file[file.rfind("/") + 1 :]
 		self.protocolName = protocolName
 		self.conflictRate = conflictRate
+		self.nbClients = nbClients
 		self.clients = clients
 		self.fastPath = {}
 		self.slowPath = {}
@@ -21,7 +22,7 @@ def getLatency(filename):
 	try:
 		f = open(config, "r")
 	except:
-		return 0,{},0,{}
+		return 0,{},0,0,{}
 	prot = f.readline()
 	#Get the protocol name
 	protName = prot[:-1]
@@ -36,6 +37,7 @@ def getLatency(filename):
 
 	#get all the latency previously calculated for each client
 	average = {}
+	nbClients = 0
 	for d in glob.glob(filename + "/c*"):
 		latency = []
 		client = d[d.rfind("-")+1:]
@@ -45,6 +47,7 @@ def getLatency(filename):
 			avg = line[0:-1]
 			avg = avg[avg.rfind(" ") + 1:-1]
 			latency += [float(avg)]
+			nbClients += 1
 		if len(latency) != 0:
 			#compute the average of each clone of one client and add it in a dictionary
 			average[client] = sum(latency) / len(latency)
@@ -54,7 +57,7 @@ def getLatency(filename):
 	try:
 		f = open(filename + "/theoretical", "r")
 	except:
-		return protName, average, conflict,{}
+		return protName, average, conflict, nbClients, {}
 
 	theoretical = {}
 	#get the theoretical value for the fast and slow path
@@ -63,38 +66,33 @@ def getLatency(filename):
 		theoretical[tmp[0]] = [float(tmp[1]), float(tmp[2])]
 
 	print(protName)
-	return protName, average, conflict, theoretical
+	return protName, average, conflict, nbClients, theoretical
 
 
 def createGraph(directory):
 	print(directory)
 	result = []
 	for f in glob.glob(directory + "/*"):
-		(prot, a, c, t) = getLatency(f)
+		(prot, a, c, nb, t) = getLatency(f)
 		#Create an array of each result
 		if len(a) != 0:
-			result += [Result(f, prot, c, a, t)]
-
-	print(result[0])
-	print(result)
+			result += [Result(f, prot, c, nb, a, t)]
 
 	for r in result:
 		plt.xticks(rotation=45, ha='right')
 		plt.title("Latency for " + r.protocolName + " (conflict rate = " + r.conflictRate + ")")
-		plt.xlabel("Clients")
+		plt.xlabel("Clients total (" + str(r.nbClients) + ")")
 		plt.ylabel("Latency (ms)")
-		#plot the result in ms for each client
-		plt.plot(r.clients.keys(), r.clients.values(), "o", color="blue", label="practical")
 		if len(r.fastPath) != 0:
 			#If we have the theoretical value we're supposed to have, we plot it
-			plt.plot(r.fastPath.keys(), r.fastPath.values(), "o", color="purple", label="fastPath")
-			plt.plot(r.slowPath.keys(), r.slowPath.values(), "o", color="green", label="slowPath")
+			plt.plot(r.fastPath.keys(), r.fastPath.values(), "o", color="salmon", label="theoretical fastPath")
+			plt.plot(r.slowPath.keys(), r.slowPath.values(), "o", color="lightsteelblue", label="theoretical slowPath")
 
-		plt.legend(loc="upper left")
+		#plot the result in ms for each client
+		plt.plot(r.clients.keys(), r.clients.values(), "+", color="darkolivegreen", label="practical")
+		plt.legend(loc="best")
 		plt.savefig(directory + "graph_" + r.file + ".pdf", bbox_inches='tight')
 		plt.clf()
-
-	exit(0)
 
 
 def main():
