@@ -1,6 +1,7 @@
 import requests
 import sys
 import json
+import itertools
 
 url = "https://www.cloudping.co/grid/p_90/timeframe/1Y#"
 
@@ -66,19 +67,28 @@ def generateLatency(servers, clients, region, latency):
 
 	print(servRegion)
 
-def generate(file, latency):
+def getServerClient(file):
 	#Load the config file
 	with open(file, 'r') as f:
 		config = json.load(f)
 	prefix = config["server-prefix"]
 	servers = [prefix + s for s in config["server"] if s != ""]
-	client = [prefix + s for s in config["client"] if s != ""]
+	clients = [prefix + s for s in config["client"] if s != ""]
 	region = config["conf_latency"]
+	return servers, clients, region
+
+def generate(file, latency):
+	servers, clients, region = getServerClient(file)
 	if len(region) != 0:
-		generateLatency(servers, client, region, latency)
+		generateLatency(servers, clients, region, latency)
 
 def max(a, b):
 	if a > b:
+		return a
+	return b
+
+def min(a, b):
+	if a < b:
 		return a
 	return b
 
@@ -104,7 +114,6 @@ def computeTheoreticalLatency(server, client, origin, latency, region, fQuorum, 
 		#We send the broadcast and we receive the propose
 		maxFast = originServers[s] + serversOrigin[s]
 		fastPath = max(fastPath, maxFast)
-		print(maxFast)
 
 	slowArray = []
 	for s in server:
@@ -130,6 +139,7 @@ def computeTheoreticalLatencyWithQFile(server, client, origin, latency, region):
 	fQuorum, leader = getQuorum("quorum.json")
 	return computeTheoreticalLatency(server, client, origin, latency, region, fQuorum, leader)
 
+#file = quorum file
 def getQuorum(file):
 	#Load the config file
 	with open(file, 'r') as f:
@@ -139,14 +149,33 @@ def getQuorum(file):
 	return config["addr"][0], config["leadersAddr"][0]
 
 
-def generateQuorum(servers, client):
-	j = {"nbQuorums": 0}
-	# Serializing json
-	json_object = json.dumps({}, separators=(',', ':'))
+def findsubsets(servers, size):
+    return list(itertools.combinations(servers, size))
 
-	# Writing to sample.json
+def generateQuorum(file, latency):
+	servers, clients, region = getServerClient(file)
+
+	subset = findsubsets(servers, 3)
+
+	bestLatency = -1
+	bestQuorum = []
+	bestLeader = ""
+	for s in subset:
+		for leader in s:
+			lat = []
+			for origin in clients:
+				fp, sp = computeTheoreticalLatency(servers, clients, origin, latency, region, s, leader)
+				lat += [min(fp, sp)]
+			tmp = sum(lat) / len(lat)
+			if bestLatency == -1 or bestLatency > tmp:
+				bestLatency = tmp
+				bestQuorum = s
+				bestLeader = leader
+
+	j = {"nbQuorums": 0, "addr":[bestQuorum], "leadersAddr":[bestLeader]}
+
 	with open("quorum.json", "w") as outfile:
-	    outfile.write(json_object)
+		json.dump(j, outfile, ensure_ascii=False, indent=4)
 
 
 if __name__ == '__main__':
@@ -155,4 +184,5 @@ if __name__ == '__main__':
 		print("You need to give the configuration file by arguments")
 		exit(0)
 	else:
-		generate(sys.argv[1], latency)
+		#generate(sys.argv[1], latency)
+		generateQuorum(sys.argv[1], latency)
