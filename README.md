@@ -29,3 +29,12 @@ The configuration file is a json file, you need to specify :
 - The directory where you have a ssh key to git clone/git pull
 - `getAndCompile` is if you want to git clone/git pull and compile each time you launch, needed to be true if you use servers you never used before
 - The option `latency` will compute and save the average latency each client experimented (you can do it by hand after with the script [latency](latency.py))
+
+## Quorum & Latency conf
+To generate the quorum conf file and the latency conf file you can launch [latencyAWS](latencyAWS.py) with the [config file](config_template.json)
+
+## Compute results latency
+Launch [latency](latency.py) with the directory you want to have the latency result. Using `file_name` will compute the average latency for all your result. The average latency will be compute for each clone and will be store in a file named `c*_latency`.
+
+## Draw a beautiful graph
+Launch [graph](graph.py) to create a graph for each result's directory you have. By default it will search a directory name `result/`.
