@@ -7,6 +7,7 @@
 		"conf_latency": [],
 
 		"request_number": 100,
+		"request_time": "",
 		"conflict_percentage": 50,
 		"writing_percentage": 50,
 		"quorum_file": "",

@@ -29,7 +29,11 @@ def launchOnServer(filename, name, role):
 	if role != "master" :
 		opt = " -maddr " + master
 	if role == "client":
-		opt += " -v " + "-server " + servers[client.index(name) % len(servers)] + " -q %s " % request_number + "-c %s -w %s " % (conflict_percentage, writing_percentage)
+		if request_time != "":
+			opt += " -t " + request_time
+		else :
+			opt += " -q %s " % request_number
+		opt += " -v " + "-server " + servers[client.index(name) % len(servers)] + " -c %s -w %s " % (conflict_percentage, writing_percentage)
 		if client_clone[client.index(name)] != 0 :
 			opt += "-clone %s " % client_clone[client.index(name)]
 			opt += "-logf " + clone_filename + "c "
@@ -110,12 +114,14 @@ def main():
 	global server_option
 	global client_option
 	global request_number
+	global request_time
 	global conflict_percentage
 	global writing_percentage
 
 	server_option = config["server_option"]
 	client_option = config["client_option"]
 	request_number = config["request_number"]
+	request_time = config["request_time"]
 	conflict_percentage = config["conflict_percentage"]
 	writing_percentage = config["writing_percentage"]
 	protocol = config["protocol"]
@@ -323,7 +329,7 @@ def launch():
 		t.join()
 
 main()
-for _ in range(5):
+for _ in range(1):
 	launch()
 
 createGraph("result/")

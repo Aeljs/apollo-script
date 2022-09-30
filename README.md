@@ -12,7 +12,7 @@
 The configuration file is a json file, you need to specify :
 - The name of the server where the master, the servers and the clients will run. You can add the `server-prefix` to have less to change. You can leave empty string, it will not harm the script. The label `client` is a dictionary with the number of clone you want to launch, it doesn't count the primary client in it.
 - The array `conf_latency` specify if you want to use specific latency with specific AWS region. The region code are [here](https://www.cloudping.co/grid/p_90/timeframe/1Y) and you can have more precision and launch it by hand with the script [latency AWS](latencyAWS.py)
-- The number of request of each client
+- The number of request of each client, or the time during the client would send commands (leave `request_time` empty if you want to use the number of request)
 - The conflict and writing percentage
 - `quorum_file` is where the quorum file is to pass it by argument. Do not copy a quorum file to the servers
 - `quorum_conf` allow you to copy a quorum conf file to the server if true, if false, fetch the quorum file we need to use to compute the theoretical latency.
